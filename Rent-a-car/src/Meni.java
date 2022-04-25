@@ -6,4 +6,5 @@ public class Meni {
     private JButton krajiEDTButton;
     private JButton uporabnikiEDTButton;
     private JButton avtomobiliEDTButton;
+    private JButton nazajButton;
 }
