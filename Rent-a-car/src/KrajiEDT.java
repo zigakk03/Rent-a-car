@@ -11,35 +11,49 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrzaveEDT extends JFrame{
-    private JPanel drzaveEDTFrame;
-    private JTable drzaveTable;
+public class KrajiEDT extends JFrame{
+    private JTable krajiTable;
     private JTextField imeTextField;
-    private JButton dodajButton;
-    private JButton urediButton;
-    private JButton izbrisiButton;
+    private JTextField postaTextField;
     private JButton nazajButton;
-    private JTextField kraticaTextField;
+    private JButton izbrisiButton;
+    private JButton urediButton;
+    private JButton dodajButton;
     private JComboBox placeComboBox;
+    private JComboBox drzavaComboBox;
+    private JPanel krajiEDTFrame;
     private List<String[]> vseDrzave = new ArrayList<String[]>();
+    private List<String[]> vsiKraji = new ArrayList<String[]>();
 
-
-
-    public DrzaveEDT(){
-        setContentPane(drzaveEDTFrame);
-        setTitle("Države EDT");
+    public KrajiEDT(){
+        setContentPane(krajiEDTFrame);
+        setTitle("Kraji EDT");
         setSize(600, 600);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
-        drzaveTable.setEnabled(false);
 
-        tableUpdate();
+        update();
         placeComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                String[] izbranaDrzava = vseDrzave.get(placeComboBox.getSelectedIndex());
-                imeTextField.setText(izbranaDrzava[1]);
-                kraticaTextField.setText(izbranaDrzava[2]);
+                String[] izbraniKraj = vsiKraji.get(placeComboBox.getSelectedIndex());
+                imeTextField.setText(izbraniKraj[1]);
+                postaTextField.setText(izbraniKraj[2]);
+                int index = -1;
+                for (String[] temp : vseDrzave) {
+                    if (temp[0].contains(izbraniKraj[3])){
+                        index = Integer.parseInt(temp[3]);
+                    }
+                }
+                drzavaComboBox.setSelectedIndex(index);
+            }
+        });
+
+        nazajButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Meni meni = new Meni();
+                close();
             }
         });
         dodajButton.addActionListener(new ActionListener() {
@@ -55,7 +69,8 @@ public class DrzaveEDT extends JFrame{
                     //System.out.println("Opened database successfully");
 
                     stmt = c.createStatement();
-                    String sql = "insert into drzave (ime, kratica) values ('"+ imeTextField.getText() +"', '"+ kraticaTextField.getText() +"');";
+                    String[] drzavaId = vseDrzave.get(drzavaComboBox.getSelectedIndex());
+                    String sql = "insert into kraji (ime, posta, drzava_id) values ('"+ imeTextField.getText() +"', '"+ postaTextField.getText() +"', "+ drzavaId[0] +");";
                     stmt.executeUpdate(sql);
 
                     stmt.close();
@@ -64,7 +79,7 @@ public class DrzaveEDT extends JFrame{
                     System.err.println( ee.getClass().getName()+": "+ ee.getMessage() );
                     System.exit(0);
                 }
-                tableUpdate();
+                update();
             }
         });
         urediButton.addActionListener(new ActionListener() {
@@ -80,8 +95,9 @@ public class DrzaveEDT extends JFrame{
                     //System.out.println("Opened database successfully");
 
                     stmt = c.createStatement();
-                    String[] idSel = vseDrzave.get(placeComboBox.getSelectedIndex());
-                    String sql = "update drzave set  ime = '"+ imeTextField.getText() +"', kratica = '"+ kraticaTextField.getText() +"' where (id = "+ idSel[0] +");";
+                    String[] idSel = vsiKraji.get(placeComboBox.getSelectedIndex());
+                    String[] drId = vseDrzave.get(drzavaComboBox.getSelectedIndex());
+                    String sql = "update kraji set  ime = '"+ imeTextField.getText() +"', posta = '"+ postaTextField.getText() +"', drzava_id = "+ drId[0] +" where (id = "+ idSel[0] +");";
                     stmt.executeUpdate(sql);
                     c.commit();
 
@@ -91,7 +107,7 @@ public class DrzaveEDT extends JFrame{
                     System.err.println( ee.getClass().getName()+": "+ ee.getMessage() );
                     System.exit(0);
                 }
-                tableUpdate();
+                update();
             }
         });
         izbrisiButton.addActionListener(new ActionListener() {
@@ -107,8 +123,8 @@ public class DrzaveEDT extends JFrame{
                     //System.out.println("Opened database successfully");
 
                     stmt = c.createStatement();
-                    String[] selId = vseDrzave.get(placeComboBox.getSelectedIndex());
-                    String sql = "delete from drzave where (id = "+ selId[0] +");";
+                    String[] selId = vsiKraji.get(placeComboBox.getSelectedIndex());
+                    String sql = "delete from kraji where (id = "+ selId[0] +");";
                     stmt.executeUpdate(sql);
                     c.commit();
 
@@ -120,15 +136,9 @@ public class DrzaveEDT extends JFrame{
                     System.exit(0);
                 }
                 imeTextField.setText("");
-                kraticaTextField.setText("");
-                tableUpdate();
-            }
-        });
-        nazajButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Meni meni = new Meni();
-                close();
+                postaTextField.setText("");
+                drzavaComboBox.setSelectedIndex(-1);
+                update();
             }
         });
     }
@@ -137,10 +147,12 @@ public class DrzaveEDT extends JFrame{
         this.dispose();
     }
 
-    private void tableUpdate(){
+    private void update(){
         vseDrzave.clear();
+        vsiKraji.clear();
         List<String[]> tableList = new ArrayList<String[]>();
         DefaultComboBoxModel num = new DefaultComboBoxModel();
+        DefaultComboBoxModel drzaveModel = new DefaultComboBoxModel<>();
         Connection c = null;
         Statement stmt = null;
         try {
@@ -150,7 +162,7 @@ public class DrzaveEDT extends JFrame{
             c.setAutoCommit(false);
             //System.out.println("Opened database successfully");
 
-            int i = 1;
+            int i = 0;
             stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery( "select * from drzave order by ime;" );
             while ( rs.next() ) {
@@ -158,10 +170,27 @@ public class DrzaveEDT extends JFrame{
                 String ime = rs.getString("ime");
                 String kratica = rs.getString("kratica");
 
-                String[] vse = {id, ime, kratica};
+                String[] vse = {id, ime, kratica, String.valueOf(i)};
                 vseDrzave.add(vse);
 
-                String[] tbLs = {i + ".", ime, kratica};
+                drzaveModel.addElement(ime + ", " + kratica);
+                i++;
+            }
+
+            i = 1;
+            stmt = c.createStatement();
+            rs = stmt.executeQuery( "select k.id, k.ime, k.posta, k.drzava_id, d.ime from kraji k inner join drzave d on d.id = k.drzava_id order by k.ime;" );
+            while ( rs.next() ) {
+                String id = String.valueOf(rs.getInt(1));
+                String ime = rs.getString(2);
+                String posta = rs.getString(3);
+                String drzavaId = String.valueOf(rs.getInt(4));
+                String drzavaIme = rs.getString(5);
+
+                String[] vse = {id, ime, posta, drzavaId};
+                vsiKraji.add(vse);
+
+                String[] tbLs = {i + ".", ime, posta, drzavaIme};
                 tableList.add(tbLs);
                 num.addElement(i + ".");
                 i++;
@@ -175,8 +204,10 @@ public class DrzaveEDT extends JFrame{
             System.exit(0);
         }
         Object[][] data = tableList.toArray(Object[][]::new);
-        drzaveTable.setModel(new DefaultTableModel(data, new String[]{"Mesto", "Ime", "Kratice"}));
+        krajiTable.setModel(new DefaultTableModel(data, new String[]{"Mesto", "Ime", "Posta", "Država"}));
         placeComboBox.setModel(num);
         placeComboBox.setSelectedIndex(-1);
+        drzavaComboBox.setModel(drzaveModel);
+        drzavaComboBox.setSelectedIndex(-1);
     }
 }
