@@ -32,6 +32,13 @@ public class Meni extends JFrame{
                 close();
             }
         });
+        uporabnikiEDTButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UporabnikiEDT uporabniki = new UporabnikiEDT();
+                close();
+            }
+        });
     }
 
     private void close(){

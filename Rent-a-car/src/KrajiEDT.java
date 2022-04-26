@@ -31,6 +31,7 @@ public class KrajiEDT extends JFrame{
         setSize(600, 600);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
+        krajiTable.setEnabled(false);
 
         update();
         placeComboBox.addItemListener(new ItemListener() {
