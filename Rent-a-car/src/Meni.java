@@ -39,13 +39,16 @@ public class Meni extends JFrame{
                 close();
             }
         });
+        nazajButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                User_sign_in userSignIn = new User_sign_in();
+                close();
+            }
+        });
     }
 
     private void close(){
         this.dispose();
-    }
-
-    public static void main(String[] args) {
-        Meni meni = new Meni();
     }
 }

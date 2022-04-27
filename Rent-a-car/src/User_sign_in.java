@@ -17,7 +17,7 @@ public class User_sign_in extends JFrame{
 
     public User_sign_in() {
         setContentPane(Jpanel1);
-        setTitle("Admin meni");
+        setTitle("Prijava");
         setSize(400, 150);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
@@ -52,6 +52,9 @@ public class User_sign_in extends JFrame{
                 }
               //  System.out.println(generatedPassword);
 
+                int userId = -1;
+                int userAdmin = -1;
+
                 Connection c = null;
                 Statement stmt = null;
                 try {
@@ -63,21 +66,17 @@ public class User_sign_in extends JFrame{
 
                     int i = 1;
                     stmt = c.createStatement();
-                    ResultSet rs = stmt.executeQuery( "select * from uporabniki WHERE uporabniki.eposta="+ textFieldEmail.getText() +"; ;" );
+                    ResultSet rs = stmt.executeQuery( "select * from uporabniki WHERE uporabniki.eposta='"+ textFieldEmail.getText() +"';" );
                     while ( rs.next() ) {
                         int id = (rs.getInt("id"));
                         String geslo = rs.getString("geslo");
                         int admin = (rs.getInt("admin"));
 
-                        if (geslo.equals( generatedPassword) ){
-                            System.out.println("login uspesen");
+                        if (geslo.equals(generatedPassword)){
+                            //System.out.println("login uspesen");
                             System.out.println(id);
-                            int id1 = id;
-                            int admin1 = admin;
-
-                        }
-                        else {
-                            System.out.println("login neuspesen");
+                            userId = id;
+                            userAdmin = admin;
                         }
                     }
 
@@ -89,13 +88,29 @@ public class User_sign_in extends JFrame{
                     System.exit(0);
                 }
 
+                if (userId > 0){
+                    if (userAdmin == 1){
+                        Meni adminMeni = new Meni();
+                        close();
+                    }
+                    else{
+                        //navadni uporabnik meni
+                        System.out.println("Navadni uporabnik.");
+                    }
 
-
-
+                }
+                else{
+                    textFieldEmail.setText("Napačen naslov ali geslo");
+                    textFieldGeslo.setText("");
+                }
             }
 
 
         });
+    }
+
+    private void close(){
+        this.dispose();
     }
     public static void main(String[] args) {
         User_sign_in user = new User_sign_in();
