@@ -46,6 +46,13 @@ public class Meni extends JFrame{
                 close();
             }
         });
+        avtomobiliEDTButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AvtomobiliEDT avtomobili = new AvtomobiliEDT();
+                close();
+            }
+        });
     }
 
     private void close(){
