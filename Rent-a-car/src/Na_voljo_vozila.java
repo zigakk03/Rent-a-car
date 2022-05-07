@@ -19,6 +19,7 @@ public class Na_voljo_vozila extends JFrame{
     private JButton vrniButton;
     private JButton izbrisRacunaButton;
     private JButton posodobitevPodatkovButton;
+    private JButton nazajButton;
     private List<String[]> vsiNaVoljo = new ArrayList<String[]>();
     private List<String[]> vsiRezervirani = new ArrayList<String[]>();
 
@@ -57,6 +58,21 @@ public class Na_voljo_vozila extends JFrame{
                     System.exit(0);
                 }
                 update(uId);
+            }
+        });
+        vrniButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String[] izbRez = vsiRezervirani.get(rezerviranaComboBox.getSelectedIndex());
+                Vrni vrni = new Vrni(uId, izbRez[6]);
+                close();
+            }
+        });
+        nazajButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                User_sign_in userSignIn = new User_sign_in();
+                close();
             }
         });
     }
@@ -101,7 +117,7 @@ public class Na_voljo_vozila extends JFrame{
 
             i = 1;
             stmt = c.createStatement();
-            rs = stmt.executeQuery("select a.id, i.od, a.znamka, a.model, a.letnik, a.registerska " +
+            rs = stmt.executeQuery("select a.id, i.od, a.znamka, a.model, a.letnik, a.registerska, i.id " +
                     "from izposoje i inner join uporabniki u on u.id = i.uporabnik_id " +
                     "inner join avtomobili a on a.id = i.avtomobil_id " +
                     "where (i.\"do\" is null)and(u.id = "+ uporabnikId +");");
@@ -112,8 +128,9 @@ public class Na_voljo_vozila extends JFrame{
                 String model = rs.getString(4);
                 String letnik = String.valueOf(rs.getInt(5));
                 String reg = rs.getString(6);
+                String izpId = String.valueOf(rs.getInt(7));
 
-                String[] vse = {id, doTime, znamka, model, letnik, reg};
+                String[] vse = {id, doTime, znamka, model, letnik, reg, izpId};
                 vsiRezervirani.add(vse);
 
                 String[] tbLs = {i + ".", doTime, znamka, model, letnik, reg};
@@ -139,5 +156,9 @@ public class Na_voljo_vozila extends JFrame{
         rezerviranaTable.setModel(new DefaultTableModel(izpData, new String[]{"Mesto", "Od", "Znamka", "Model", "Letnik", "Registracija"}));
         rezerviranaComboBox.setModel(rezNum);
         rezerviranaComboBox.setSelectedIndex(-1);
+    }
+
+    private void close(){
+        this.dispose();
     }
 }
