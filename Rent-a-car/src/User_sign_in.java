@@ -94,8 +94,8 @@ public class User_sign_in extends JFrame{
                         close();
                     }
                     else{
-                        //navadni uporabnik meni
-                        System.out.println("Navadni uporabnik.");
+                        Na_voljo_vozila naVoljoVozila = new Na_voljo_vozila(userId);
+                        close();
                     }
 
                 }
