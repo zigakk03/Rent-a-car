@@ -159,6 +159,18 @@ public class UporabnikiEDT extends JFrame{
                 update();
             }
         });
+        izposojeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    String[] idSel = vsiUporabniki.get(placeComboBox.getSelectedIndex());
+                    IzposojeEDT izposojeEDT = new IzposojeEDT(-1, Integer.parseInt(idSel[0]));
+                }catch (Exception ex){
+                    IzposojeEDT izposojeEDT = new IzposojeEDT(-1, -1);
+                }
+                close();
+            }
+        });
     }
 
     private void update(){
