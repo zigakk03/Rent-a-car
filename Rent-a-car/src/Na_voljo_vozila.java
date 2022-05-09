@@ -75,6 +75,13 @@ public class Na_voljo_vozila extends JFrame{
                 close();
             }
         });
+        izbrisRacunaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Del_user delUser = new Del_user(uId);
+                close();
+            }
+        });
     }
 
     private void update(int uporabnikId){
