@@ -82,6 +82,13 @@ public class Na_voljo_vozila extends JFrame{
                 close();
             }
         });
+        posodobitevPodatkovButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Spremeni_user sp = new Spremeni_user(uId);
+                close();
+            }
+        });
     }
 
     private void update(int uporabnikId){

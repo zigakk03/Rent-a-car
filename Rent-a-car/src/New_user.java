@@ -73,6 +73,8 @@ public class New_user extends JFrame{
             nazajButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                User_sign_in sg = new User_sign_in();
+
                 close();
             }
         });

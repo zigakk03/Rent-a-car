@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,6 +22,7 @@ public class Spremeni_user extends JFrame {
     private JButton nazajButton;
     private JPanel JpanelSpremeni;
     private List<String[]> vsiKrai = new ArrayList<String[]>();
+    private List<String[]> vseIzposoje = new ArrayList<String[]>();
 
 
 
@@ -45,7 +48,7 @@ public class Spremeni_user extends JFrame {
             while (rs.next()) {
 
                 String eposta = rs.getString(2);
-                String geslo = rs.getString(3);
+               // String geslo = rs.getString(3);
                 String vozniska =rs.getString(4);
                 String tel = rs.getString(5);
                 String ime = rs.getString(6);
@@ -57,7 +60,7 @@ public class Spremeni_user extends JFrame {
                 textFieldIME.setText(ime);
                 textFieldPRI.setText(priimek);
                 textFieldTEL.setText(tel);
-                textFieldGES.setText(geslo);
+               // textFieldGES.setText(geslo);
                 textFieldVOZ.setText(vozniska);
                 krajId = kraj_id;
             }
@@ -135,8 +138,71 @@ public class Spremeni_user extends JFrame {
         });
 
 
+        spremeniButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
 
+                String passwordToHash = textFieldGES.getText() ;
+                String generatedPassword = null;
+
+                try
+                {
+
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+
+
+                    md.update(passwordToHash.getBytes());
+
+
+                    byte[] bytes = md.digest();
+
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < bytes.length; i++) {
+                        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                    }
+
+
+                    generatedPassword = sb.toString();
+                } catch (NoSuchAlgorithmException v) {
+                    v.printStackTrace();
+                }
+
+
+
+                Connection c = null;
+                Statement stmt = null;
+                try {
+                    Class.forName("org.postgresql.Driver");
+                    c = DriverManager
+                            .getConnection("jdbc:postgresql://ec2-52-48-159-67.eu-west-1.compute.amazonaws.com:5432/d4rdk5mc1jo194", "kydeaasqumgwgz", "7c3167c33c4de7f3a8730f7fbc3c861a12c643c56e1924a8d147d148fb2a1a23");
+                    c.setAutoCommit(false);
+                    //System.out.println("Opened database successfully");
+
+                    stmt = c.createStatement();
+                    String[] selId = vsiKrai.get(comboBox1.getSelectedIndex());
+                    String sql = "UPDATE uporabniki  SET  eposta ='"+textFieldEPO.getText()+"', geslo='"+generatedPassword+"' , vozniska=  '"+textFieldVOZ.getText()+"', tel='"+textFieldTEL.getText()+"', ime='"+textFieldIME.getText()+"', priimek='"+textFieldPRI.getText()+"', kraj_id="+selId[0]+"WHERE id="+uid+";";
+
+                    stmt.executeUpdate(sql);
+                    c.commit();
+
+
+
+                    stmt.close();
+                    c.close();
+
+                } catch ( Exception ee ) {
+                    System.err.println( ee.getClass().getName()+": "+ ee.getMessage() );
+                    //System.exit(0);
+
+
+
+                }
+Na_voljo_vozila nvv = new Na_voljo_vozila(uid);
+                close();
+            }
+        });
     }
     private void close(){
         this.dispose();
