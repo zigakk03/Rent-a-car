@@ -91,7 +91,7 @@ public class User_sign_in extends JFrame{
                 if (userId > 0){
                     if (userAdmin == 1){
                         Meni adminMeni = new Meni();
-                        close();
+
                     }
                     else{
                         Na_voljo_vozila naVoljoVozila = new Na_voljo_vozila(userId);
@@ -105,6 +105,14 @@ public class User_sign_in extends JFrame{
                 }
             }
 
+
+        });
+        signUpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                New_user prijava = new New_user();
+                close();
+            }
 
         });
     }
