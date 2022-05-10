@@ -28,7 +28,7 @@ public class Spremeni_user extends JFrame {
 
     public Spremeni_user(int uid){
         setContentPane(JpanelSpremeni);
-        setTitle("Registracija");
+        setTitle("Posodobitev podatkov");
         setSize(600, 450);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
