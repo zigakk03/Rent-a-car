@@ -91,6 +91,7 @@ public class User_sign_in extends JFrame{
                 if (userId > 0){
                     if (userAdmin == 1){
                         Meni adminMeni = new Meni();
+                        close();
 
                     }
                     else{
